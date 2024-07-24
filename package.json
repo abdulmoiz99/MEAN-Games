@@ -1,0 +1,16 @@
+{
+  "name": "mean-games",
+  "version": "1.0.0",
+  "description": "MWA Task",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node app.js"
+  },
+  "author": "Abdul Moiz",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "path": "^0.12.7"
+  }
+}
