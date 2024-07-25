@@ -6,7 +6,7 @@ router.route("/games")
     .get(gamesController.getAll)
     .post(gamesController.addOne)
 
-router.route("/games/:index")
+router.route("/games/:Id")
     .get(gamesController.getOne)
 
 module.exports = router;
