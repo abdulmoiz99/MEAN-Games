@@ -1,5 +1,6 @@
 const { ObjectId } = require("mongodb");
 const dbConnection = require("./data/dbConnection");
+const env = process.env;
 
 const getAll = function (req, res) {
     console.log("getAll controller");
@@ -12,7 +13,7 @@ const getAll = function (req, res) {
     if (req.query && req.query.count) {
         count = parseInt(req.query.count);
     }
-    const gameCollection = db.collection("games");
+    const gameCollection = db.collection(env.COLLECTION_GAMES);
     gameCollection.find().skip(offset).limit(count).toArray(function (error, games) {
         res.status(200).json(games);
     });
@@ -22,7 +23,7 @@ const getOne = function (req, res) {
     console.log("getOne controller");
     const db = dbConnection.get();
     const gameId = req.params.Id
-    const gameCollection = db.collection("games");
+    const gameCollection = db.collection(env.COLLECTION_GAMES);
     gameCollection.findOne({ _id: ObjectId(gameId) }, function (error, game) {
         res.status(200).json(game);
     })
@@ -31,7 +32,7 @@ const getOne = function (req, res) {
 const addOne = function (req, res) {
     console.log("addOne controller");
     const db = dbConnection.get();
-    const gameCollection = db.collection("games");
+    const gameCollection = db.collection(env.COLLECTION_GAMES);
     let newGame = {};
 
     if (req.body && req.body.title && req.body.price) {

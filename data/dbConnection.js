@@ -1,16 +1,17 @@
 const MongoClient = require("mongodb").MongoClient;
 
 let _connection = null
+const env = process.env;
 
 const open = function () {
-    MongoClient.connect("mongodb://127.0.0.1:27017/", function (error, client) {
+    MongoClient.connect(env.DB_URL, function (error, client) {
         if (error) {
-            console.log("DB connection failed");
+            console.log(env.DB_CONNECTION_FAILED_MESSAGE);
             return;
         }
         else {
-            _connection = client.db("meanGames");
-            console.log("DB connection open");
+            _connection = client.db(env.COLLECTION_NAME);
+            console.log(env.DB_CONNECTION_SUCCESS_MESSAGE);
         }
     })
 }
