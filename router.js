@@ -9,4 +9,7 @@ router.route("/games")
 router.route("/games/:Id")
     .get(gamesController.getOne)
 
+router.route("/getGames")
+    .get(gamesController.getGames)
+
 module.exports = router;

@@ -40,7 +40,7 @@ const addOne = function (req, res) {
             "title": req.body.title,
             "price": req.body.price
         }
-        gameCollection.insertOne(newGame, function(error, response){
+        gameCollection.insertOne(newGame, function (error, response) {
             res.status(200).json(response);
         })
     }
@@ -48,8 +48,24 @@ const addOne = function (req, res) {
         res.status(401).json("Missing parameters in request body")
     }
 }
+
+const getGames = function (req, res) {
+    console.log("getGames controller");
+    let count = 3;
+    const db = dbConnection.get();
+    if (req.query && req.query.count) {
+        count = parseInt(req.query.count);
+        if (count > 7) count = 7
+    }
+    const gameCollection = db.collection(env.COLLECTION_GAMES);
+    gameCollection.find().limit(count).toArray(function (error, games) {
+        res.status(200).json(games);
+    });
+}
+
 module.exports = {
     getAll,
     getOne,
-    addOne
+    addOne,
+    getGames
 }
