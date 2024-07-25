@@ -35,17 +35,29 @@ const addOne = function (req, res) {
     const gameCollection = db.collection(env.COLLECTION_GAMES);
     let newGame = {};
 
-    if (req.body && req.body.title && req.body.price) {
-        newGame = {
-            "title": req.body.title,
-            "price": req.body.price
+    if (req.body && req.body.title && req.body.price && req.body.minPlayers && req.body.minAge) {
+
+        if (req.body.minPlayers < 1 || req.body.minPlayers > 10) {
+            res.status(400).json("Minimum numbers of players must be in between 1 and 10");
         }
-        gameCollection.insertOne(newGame, function (error, response) {
-            res.status(200).json(response);
-        })
+        else if (req.body.minAge < 7 || req.body.minAge > 99) {
+            res.status(400).json("Minimum age must be in between 7 and 99");
+        }
+        else {
+            newGame = {
+                "title": req.body.title,
+                "price": req.body.price,
+                "minPlayers": req.body.minPlayers,
+                "minAge": req.body.minAge
+
+            }
+            gameCollection.insertOne(newGame, function (error, response) {
+                res.status(200).json(response);
+            })
+        }
     }
     else {
-        res.status(401).json("Missing parameters in request body")
+        res.status(400).json("Missing parameters in request body")
     }
 }
 
