@@ -1,3 +1,5 @@
+const env = process.env
+
 const getGamesRequest = function (req) {
     let count = 3;
     if (req.query && req.query.count) {
@@ -13,23 +15,23 @@ const addOneRequest = function (req, res) {
     if (req.body && req.body.title && req.body.price && req.body.minPlayers && req.body.minAge) {
 
         if (req.body.minPlayers < 1 || req.body.minPlayers > 10) {
-            res.status(400).json("Minimum numbers of players must be in between 1 and 10");
+            res.status(env.STATUS_BAD_REQUEST).json(env.ERROR_MIN_PLAYERS);
         }
         else if (req.body.minAge < 7 || req.body.minAge > 99) {
-            res.status(400).json("Minimum age must be in between 7 and 99");
+            res.status(env.STATUS_BAD_REQUEST00).json(env.ERROR_MIN_AGE);
         }
         else {
             newGame = {
-                "title": req.body.title,
-                "price": req.body.price,
-                "minPlayers": req.body.minPlayers,
-                "minAge": req.body.minAge
+                title: req.body.title,
+                price: req.body.price,
+                minPlayers: req.body.minPlayers,
+                minAge: req.body.minAge
 
             }
         }
     }
     else {
-        res.status(400).json("Missing parameters in request body")
+        res.status(env.STATUS_BAD_REQUEST).json(env.ERROR_MISSING_PARAMETERS)
     }
     return newGame;
 }

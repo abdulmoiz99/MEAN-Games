@@ -13,11 +13,11 @@ const gameCollection_Find_Skip_Limit_ToArrayCallback = callbackify(function (off
 })
 
 const gameCollection_FindOneCallback = callbackify(function (gameId) {
-    return etGameCollection().findOne({ _id: new ObjectId(gameId) })
+    return getGameCollection().findOne({ _id: new ObjectId(gameId) })
 })
 
 const gameCollection_InsertOneCallback = callbackify(function (newGame) {
-    return etGameCollection().insertOne(newGame);
+    return getGameCollection().insertOne(newGame);
 })
 
 const gameCollection_FindLimit_ToArrayCallback = callbackify(function (count) {
@@ -36,7 +36,7 @@ const getAll = function (req, res) {
         count = parseInt(req.query.count);
     }
     gameCollection_Find_Skip_Limit_ToArrayCallback(offset, count, function (error, games) {
-        res.status(200).json(games);
+        res.status(env.STATUS_SUCCESS).json(games);
     });
 }
 
@@ -44,7 +44,7 @@ const getOne = function (req, res) {
     console.log("getOne controller");
     const gameId = req.params.Id
     gameCollection_FindOneCallback(gameId, function (error, game) {
-        res.status(200).json(game);
+        res.status(env.STATUS_SUCCESS).json(game);
     })
 }
 const addOne = function (req, res) {
@@ -52,7 +52,7 @@ const addOne = function (req, res) {
     let newGame = validate.addOneRequest(req, res);
     if (newGame) {
         gameCollection_InsertOneCallback(newGame, function (error, response) {
-            res.status(200).json(response);
+            res.status(env.STATUS_SUCCESS).json(response);
         })
     }
 }
@@ -61,7 +61,7 @@ const getGames = function (req, res) {
     console.log("getGames controller");
     const count = validate.getGamesRequest(req);
     gameCollection_FindLimit_ToArrayCallback(count, function (error, games) {
-        res.status(200).json(games);
+        res.status(env.STATUS_SUCCESS).json(games);
     });
 }
 module.exports = {
