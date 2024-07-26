@@ -1,10 +1,15 @@
 const MongoClient = require("mongodb").MongoClient;
+const callbackify = require("util").callbackify
 
-let _connection = null
+let_connection = null
 const env = process.env;
 
+const MongoClientConnectWithCallBack = callbackify(function (url) {
+    return MongoClient.connect(url);
+})
+
 const open = function () {
-    MongoClient.connect(env.DB_URL, function (error, client) {
+    MongoClientConnectWithCallBack(env.DB_URL, function (error, client) {
         if (error) {
             console.log(env.DB_CONNECTION_FAILED_MESSAGE);
             return;
