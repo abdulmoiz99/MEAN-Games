@@ -40,9 +40,20 @@ const addOne = function (req, res) {
         })
     }
 }
+const deleteOne = function (req, res) {
+    console.log("deleteOne controller");
+    const gameId = req.params.Id
+    Game.deleteOne({ _id: gameId }).exec(function (error, games) {
+        if (error) {
+            console.log(error);
+        }
+        else res.status(200).json(games);
+    })
+}
 
 module.exports = {
     getAll,
     getOne,
     addOne,
+    deleteOne,
 }

@@ -6,8 +6,11 @@ const getOne = service.getOne
 
 const addOne = service.addOne
 
+const deleteOne = service.deleteOne
+
 module.exports = {
     getAll,
     getOne,
-    addOne
+    addOne,
+    deleteOne
 }
