@@ -1,33 +1,16 @@
-let gamesData = require("./data/games.json")
+const service = require("./gamesService");
 
-const getAll = function (req, res) {
-    console.log("getAll controller");
-    let offset = 0;
-    let count = 5;
+const getAll = service.getAll
 
-    if (req.query && req.query.offset) {
-        offset = parseInt(req.query.offset);
-    }
-    if (req.query && req.query.count) {
-        count = parseInt(req.query.count);
-    }
-    const data = gamesData.slice(offset, offset + count)
+const getOne = service.getOne
 
-    res.status(200).json(data);
-}
+const addOne = service.addOne
 
-const getOne = function (req, res) {
-    console.log("getOne controller");
-    const index = req.params.index + 1
-    res.status(200).json(gamesData[index]);
-}
+const getGames = service.getGames
 
-const addOne = function (req, res) {
-    console.log("addOne controller");
-    console.log(req.body);
-}
 module.exports = {
     getAll,
     getOne,
-    addOne
+    addOne,
+    getGames
 }
