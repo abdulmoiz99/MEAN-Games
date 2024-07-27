@@ -13,21 +13,11 @@ const addOneRequest = function (req, res) {
     let newGame = null;
 
     if (req.body && req.body.title && req.body.price && req.body.minPlayers && req.body.minAge) {
-
-        if (req.body.minPlayers < 1 || req.body.minPlayers > 10) {
-            res.status(env.STATUS_BAD_REQUEST).json(env.ERROR_MIN_PLAYERS);
-        }
-        else if (req.body.minAge < 7 || req.body.minAge > 99) {
-            res.status(env.STATUS_BAD_REQUEST00).json(env.ERROR_MIN_AGE);
-        }
-        else {
-            newGame = {
-                title: req.body.title,
-                price: req.body.price,
-                minPlayers: req.body.minPlayers,
-                minAge: req.body.minAge
-
-            }
+        newGame = {
+            title: req.body.title,
+            price: req.body.price,
+            minPlayers: req.body.minPlayers,
+            minAge: req.body.minAge
         }
     }
     else {

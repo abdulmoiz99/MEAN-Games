@@ -1,29 +1,12 @@
 const { ObjectId } = require("mongodb");
 const dbConnection = require("./data/dbConnection");
-const env = process.env;
+const mongoose = require("mongoose");
 const callbackify = require("util").callbackify
 const validate = require("./gamesValidation");
+const { log } = require("console");
 
-const getGameCollection = function () {
-    const db = dbConnection.get();
-    return db.collection(env.COLLECTION_GAMES);
-}
-const gameCollection_Find_Skip_Limit_ToArrayCallback = callbackify(function (offset, count) {
-    return getGameCollection().find().skip(offset).limit(count).toArray();
-})
-
-const gameCollection_FindOneCallback = callbackify(function (gameId) {
-    return getGameCollection().findOne({ _id: new ObjectId(gameId) })
-})
-
-const gameCollection_InsertOneCallback = callbackify(function (newGame) {
-    return getGameCollection().insertOne(newGame);
-})
-
-const gameCollection_FindLimit_ToArrayCallback = callbackify(function (count) {
-    return getGameCollection().find().limit(count).toArray();
-})
-
+const env = process.env;
+const Game = mongoose.model(env.GAME_MODEL)
 
 const getAll = function (req, res) {
     console.log("getAll controller");
@@ -35,38 +18,35 @@ const getAll = function (req, res) {
     if (req.query && req.query.count) {
         count = parseInt(req.query.count);
     }
-    gameCollection_Find_Skip_Limit_ToArrayCallback(offset, count, function (error, games) {
-        res.status(env.STATUS_SUCCESS).json(games);
-    });
+    Game.find().skip(offset).limit(count).exec(function (error, games) {
+        res.status(200).json(games);
+    })
 }
 
 const getOne = function (req, res) {
     console.log("getOne controller");
     const gameId = req.params.Id
-    gameCollection_FindOneCallback(gameId, function (error, game) {
-        res.status(env.STATUS_SUCCESS).json(game);
+    Game.findById(gameId).exec(function (error, games) {
+        res.status(200).json(games);
     })
 }
 const addOne = function (req, res) {
     console.log("addOne controller");
     let newGame = validate.addOneRequest(req, res);
     if (newGame) {
-        gameCollection_InsertOneCallback(newGame, function (error, response) {
-            res.status(env.STATUS_SUCCESS).json(response);
+        Game.create(newGame, function (error, game) {
+            if (error) {
+                console.log(error);
+                res.status(400).json(error.message);
+
+            }
+            else res.status(200).json(game);
         })
     }
 }
 
-const getGames = function (req, res) {
-    console.log("getGames controller");
-    const count = validate.getGamesRequest(req);
-    gameCollection_FindLimit_ToArrayCallback(count, function (error, games) {
-        res.status(env.STATUS_SUCCESS).json(games);
-    });
-}
 module.exports = {
     getAll,
     getOne,
     addOne,
-    getGames
 }
