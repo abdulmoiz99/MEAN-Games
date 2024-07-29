@@ -71,32 +71,97 @@ const deleteOne = function (req, res) {
         else res.status(200).json(games);
     })
 }
+
 const fullUpdate = function (req, res) {
     console.log("fullUpdate controller");
     const gameId = req.params.Id
-    GameFindByIdExec_Callback(gameId, function (error, game) {
-        game.title = req.body.title;
-        game.price = req.body.price;
-        game.minPlayers = req.body.minPlayers;
-        game.minAge = req.body.minAge;
-        game.publisher = {}
-        game.reviews = [];
-        
-        gameSave_Callback(game, function (error, gameResponse) {
-            if (error) {
-                console.log(error)
-                res.status(500).json(error);
-            }
-            else res.status(200).json(gameResponse);
 
-        })
+    if (!mongoose.Types.ObjectId.isValid(gameId)) {
+        return res.status(400).json("Please provide valid game Id");
+    }
+
+    GameFindByIdExec_Callback(gameId, function (error, game) {
+        if (error) {
+            console.log(error)
+            res.status(500).json(error);
+        }
+        else if (!game) {
+            res.status(404).json("Game not found");
+
+        }
+        else {
+            game.title = req.body.title;
+            game.year = req.body.year;
+            game.rate = req.body.rate;
+            game.price = req.body.price;
+            game.minPlayers = req.body.minPlayers;
+            game.maxPlayers = req.body.maxPlayers;
+            game.minAge = req.body.minAge;
+            game.publisher = {}
+            game.reviews = [];
+            game.designers = []
+
+
+            gameSave_Callback(game, function (error, gameResponse) {
+                if (error) {
+                    console.log(error)
+                    res.status(500).json(error);
+                }
+                else res.status(200).json(gameResponse);
+
+            })
+        }
     })
 
 }
+
+const partialUpdate = function (req, res) {
+    console.log("partialUpdate controller");
+    const gameId = req.params.Id
+
+    if (!mongoose.Types.ObjectId.isValid(gameId)) {
+        return res.status(400).json("Please provide valid game Id");
+    }
+
+    GameFindByIdExec_Callback(gameId, function (error, game) {
+        if (error) {
+            console.log(error)
+            res.status(500).json(error);
+        }
+        else if (!game) {
+            res.status(404).json("Game not found");
+
+        }
+        else {
+            if (req.body && req.body.title) { game.title = req.body.title; }
+            if (req.body && req.body.year) { game.year = req.body.year; }
+            if (req.body && req.body.rate) { game.rate = req.body.rate; }
+            if (req.body && req.body.price) { game.price = req.body.price; }
+            if (req.body && req.body.minPlayers) { game.minPlayers = req.body.minPlayers; }
+            if (req.body && req.body.maxPlayers) { game.maxPlayers = req.body.maxPlayers; }
+            if (req.body && req.body.minAge) { game.minAge = req.body.minAge; }
+            if (req.body && req.body.publisher) { game.publisher = {} }
+            if (req.body && req.body.reviews) { game.reviews = []; }
+            if (req.body && req.body.designers) { game.designers = [] }
+
+            gameSave_Callback(game, function (error, gameResponse) {
+                if (error) {
+                    console.log(error)
+                    res.status(500).json(error);
+                }
+                else res.status(200).json(gameResponse);
+
+            })
+        }
+    })
+
+}
+
 module.exports = {
     getAll,
     getOne,
     addOne,
     deleteOne,
     fullUpdate,
+    partialUpdate,
 }

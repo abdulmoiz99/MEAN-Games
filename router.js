@@ -9,6 +9,7 @@ router.route("/games")
 router.route("/games/:Id")
     .get(gamesController.getOne)
     .put(gamesController.fullUpdate)
+    .patch(gamesController.partialUpdate)
     .delete(gamesController.deleteOne)
 
 module.exports = router;
