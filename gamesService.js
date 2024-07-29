@@ -1,29 +1,24 @@
-const { ObjectId } = require("mongodb");
-const dbConnection = require("./data/dbConnection");
-const env = process.env;
-const callbackify = require("util").callbackify
+const mongoose = require("mongoose");
 const validate = require("./gamesValidation");
 
-const getGameCollection = function () {
-    const db = dbConnection.get();
-    return db.collection(env.COLLECTION_GAMES);
-}
-const gameCollection_Find_Skip_Limit_ToArrayCallback = callbackify(function (offset, count) {
-    return getGameCollection().find().skip(offset).limit(count).toArray();
+const env = process.env;
+const Game = mongoose.model(env.GAME_MODEL)
+const callbackify = require("util").callbackify
+
+const GameFindSkipLimitExec_Callback = callbackify(function (offset, count) {
+    return Game.find().skip(offset).limit(count).exec();
 })
 
-const gameCollection_FindOneCallback = callbackify(function (gameId) {
-    return getGameCollection().findOne({ _id: new ObjectId(gameId) })
+const GameFindByIdExec_Callback = callbackify(function (gameId) {
+    return Game.findById(gameId).exec();
+})
+const GameDeleteOneExec_Callback = callbackify(function (gameId) {
+    return Game.deleteOne({ _id: gameId }).exec()
 })
 
-const gameCollection_InsertOneCallback = callbackify(function (newGame) {
-    return getGameCollection().insertOne(newGame);
+const GameCreate_Callback = callbackify(function (newGame) {
+    return Game.create(newGame)
 })
-
-const gameCollection_FindLimit_ToArrayCallback = callbackify(function (count) {
-    return getGameCollection().find().limit(count).toArray();
-})
-
 
 const getAll = function (req, res) {
     console.log("getAll controller");
@@ -35,38 +30,46 @@ const getAll = function (req, res) {
     if (req.query && req.query.count) {
         count = parseInt(req.query.count);
     }
-    gameCollection_Find_Skip_Limit_ToArrayCallback(offset, count, function (error, games) {
-        res.status(env.STATUS_SUCCESS).json(games);
-    });
+    GameFindSkipLimitExec_Callback(offset, count, function (error, games) {
+        res.status(200).json(games);
+    })
 }
 
 const getOne = function (req, res) {
     console.log("getOne controller");
     const gameId = req.params.Id
-    gameCollection_FindOneCallback(gameId, function (error, game) {
-        res.status(env.STATUS_SUCCESS).json(game);
+    GameFindByIdExec_Callback(gameId, function (error, games) {
+        res.status(200).json(games);
     })
 }
 const addOne = function (req, res) {
     console.log("addOne controller");
     let newGame = validate.addOneRequest(req, res);
     if (newGame) {
-        gameCollection_InsertOneCallback(newGame, function (error, response) {
-            res.status(env.STATUS_SUCCESS).json(response);
+        GameCreate_Callback(newGame, function (error, game) {
+            if (error) {
+                console.log(error);
+                res.status(400).json(error.message);
+
+            }
+            else res.status(200).json(game);
         })
     }
 }
-
-const getGames = function (req, res) {
-    console.log("getGames controller");
-    const count = validate.getGamesRequest(req);
-    gameCollection_FindLimit_ToArrayCallback(count, function (error, games) {
-        res.status(env.STATUS_SUCCESS).json(games);
-    });
+const deleteOne = function (req, res) {
+    console.log("deleteOne controller");
+    const gameId = req.params.Id
+    GameDeleteOneExec_Callback(gameId, function (error, games) {
+        if (error) {
+            console.log(error);
+        }
+        else res.status(200).json(games);
+    })
 }
+
 module.exports = {
     getAll,
     getOne,
     addOne,
-    getGames
+    deleteOne,
 }

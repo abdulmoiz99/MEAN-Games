@@ -6,11 +6,11 @@ const getOne = service.getOne
 
 const addOne = service.addOne
 
-const getGames = service.getGames
+const deleteOne = service.deleteOne
 
 module.exports = {
     getAll,
     getOne,
     addOne,
-    getGames
+    deleteOne
 }

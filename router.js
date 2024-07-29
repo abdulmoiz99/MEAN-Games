@@ -8,8 +8,6 @@ router.route("/games")
 
 router.route("/games/:Id")
     .get(gamesController.getOne)
-
-router.route("/getGames")
-    .get(gamesController.getGames)
+    .delete(gamesController.deleteOne)
 
 module.exports = router;
