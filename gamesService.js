@@ -3,6 +3,22 @@ const validate = require("./gamesValidation");
 
 const env = process.env;
 const Game = mongoose.model(env.GAME_MODEL)
+const callbackify = require("util").callbackify
+
+const GameFindSkipLimitExec_Callback = callbackify(function (offset, count) {
+    return Game.find().skip(offset).limit(count).exec();
+})
+
+const GameFindByIdExec_Callback = callbackify(function (gameId) {
+    return Game.findById(gameId).exec();
+})
+const GameDeleteOneExec_Callback = callbackify(function (gameId) {
+    return Game.deleteOne({ _id: gameId }).exec()
+})
+
+const GameCreate_Callback = callbackify(function (newGame) {
+    return Game.create(newGame)
+})
 
 const getAll = function (req, res) {
     console.log("getAll controller");
@@ -14,7 +30,7 @@ const getAll = function (req, res) {
     if (req.query && req.query.count) {
         count = parseInt(req.query.count);
     }
-    Game.find().skip(offset).limit(count).exec(function (error, games) {
+    GameFindSkipLimitExec_Callback(offset, count, function (error, games) {
         res.status(200).json(games);
     })
 }
@@ -22,7 +38,7 @@ const getAll = function (req, res) {
 const getOne = function (req, res) {
     console.log("getOne controller");
     const gameId = req.params.Id
-    Game.findById(gameId).exec(function (error, games) {
+    GameFindByIdExec_Callback(gameId, function (error, games) {
         res.status(200).json(games);
     })
 }
@@ -30,7 +46,7 @@ const addOne = function (req, res) {
     console.log("addOne controller");
     let newGame = validate.addOneRequest(req, res);
     if (newGame) {
-        Game.create(newGame, function (error, game) {
+        GameCreate_Callback(newGame, function (error, game) {
             if (error) {
                 console.log(error);
                 res.status(400).json(error.message);
@@ -43,7 +59,7 @@ const addOne = function (req, res) {
 const deleteOne = function (req, res) {
     console.log("deleteOne controller");
     const gameId = req.params.Id
-    Game.deleteOne({ _id: gameId }).exec(function (error, games) {
+    GameDeleteOneExec_Callback(gameId, function (error, games) {
         if (error) {
             console.log(error);
         }
