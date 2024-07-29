@@ -3,6 +3,7 @@ const validate = require("./gamesValidation");
 
 const env = process.env;
 const Game = mongoose.model(env.GAME_MODEL)
+
 const callbackify = require("util").callbackify
 
 const GameFindSkipLimitExec_Callback = callbackify(function (offset, count) {
@@ -22,6 +23,11 @@ const GameCreate_Callback = callbackify(function (newGame) {
 const gameSave_Callback = callbackify(function (game) {
     return game.save()
 })
+
+let _response = {
+    status: 200,
+    message: null
+};
 
 const getAll = function (req, res) {
     console.log("getAll controller");
@@ -72,51 +78,20 @@ const deleteOne = function (req, res) {
     })
 }
 
-const fullUpdate = function (req, res) {
-    console.log("fullUpdate controller");
-    const gameId = req.params.Id
-
-    if (!mongoose.Types.ObjectId.isValid(gameId)) {
-        return res.status(400).json("Please provide valid game Id");
-    }
-
-    GameFindByIdExec_Callback(gameId, function (error, game) {
-        if (error) {
-            console.log(error)
-            res.status(500).json(error);
-        }
-        else if (!game) {
-            res.status(404).json("Game not found");
-
-        }
-        else {
-            game.title = req.body.title;
-            game.year = req.body.year;
-            game.rate = req.body.rate;
-            game.price = req.body.price;
-            game.minPlayers = req.body.minPlayers;
-            game.maxPlayers = req.body.maxPlayers;
-            game.minAge = req.body.minAge;
-            game.publisher = {}
-            game.reviews = [];
-            game.designers = []
-
-
-            gameSave_Callback(game, function (error, gameResponse) {
-                if (error) {
-                    console.log(error)
-                    res.status(500).json(error);
-                }
-                else res.status(200).json(gameResponse);
-
-            })
-        }
-    })
-
-}
-
 const partialUpdate = function (req, res) {
     console.log("partialUpdate controller");
+
+    _update(req, res, updatePartialGameMapping)
+}
+
+const fullUpdate = function (req, res) {
+    console.log("fullUpdate controller");
+
+    _update(req, res, updateFullGameMapping)
+}
+
+const _update = function (req, res, updateGameMappingCallback) {
+
     const gameId = req.params.Id
 
     if (!mongoose.Types.ObjectId.isValid(gameId)) {
@@ -124,38 +99,69 @@ const partialUpdate = function (req, res) {
     }
 
     GameFindByIdExec_Callback(gameId, function (error, game) {
+
         if (error) {
             console.log(error)
-            res.status(500).json(error);
+            _response = {
+                status: 500,
+                message: error
+            };
         }
         else if (!game) {
-            res.status(404).json("Game not found");
-
+            _response = {
+                status: 404,
+                message: "Game not found"
+            };
         }
         else {
-            if (req.body && req.body.title) { game.title = req.body.title; }
-            if (req.body && req.body.year) { game.year = req.body.year; }
-            if (req.body && req.body.rate) { game.rate = req.body.rate; }
-            if (req.body && req.body.price) { game.price = req.body.price; }
-            if (req.body && req.body.minPlayers) { game.minPlayers = req.body.minPlayers; }
-            if (req.body && req.body.maxPlayers) { game.maxPlayers = req.body.maxPlayers; }
-            if (req.body && req.body.minAge) { game.minAge = req.body.minAge; }
-            if (req.body && req.body.publisher) { game.publisher = {} }
-            if (req.body && req.body.reviews) { game.reviews = []; }
-            if (req.body && req.body.designers) { game.designers = [] }
+            updateGameMappingCallback(req, game);
 
             gameSave_Callback(game, function (error, gameResponse) {
                 if (error) {
                     console.log(error)
-                    res.status(500).json(error);
+                    _response = {
+                        status: 500,
+                        message: error
+                    };
                 }
-                else res.status(200).json(gameResponse);
-
+                else {
+                    _response = {
+                        status: 200,
+                        message: gameResponse
+                    };
+                }
             })
         }
-    })
+        res.status(_response.status).json(_response.message);
 
+    })
 }
+const updatePartialGameMapping = function (req, game) {
+    if (req.body && req.body.title) { game.title = req.body.title; }
+    if (req.body && req.body.year) { game.year = req.body.year; }
+    if (req.body && req.body.rate) { game.rate = req.body.rate; }
+    if (req.body && req.body.price) { game.price = req.body.price; }
+    if (req.body && req.body.minPlayers) { game.minPlayers = req.body.minPlayers; }
+    if (req.body && req.body.maxPlayers) { game.maxPlayers = req.body.maxPlayers; }
+    if (req.body && req.body.minAge) { game.minAge = req.body.minAge; }
+    if (req.body && req.body.publisher) { game.publisher = {}; }
+    if (req.body && req.body.reviews) { game.reviews = []; }
+    if (req.body && req.body.designers) { game.designers = []; }
+}
+
+const updateFullGameMapping = function (game, req) {
+    game.title = req.body.title;
+    game.year = req.body.year;
+    game.rate = req.body.rate;
+    game.price = req.body.price;
+    game.minPlayers = req.body.minPlayers;
+    game.maxPlayers = req.body.maxPlayers;
+    game.minAge = req.body.minAge;
+    game.publisher = {};
+    game.reviews = [];
+    game.designers = [];
+}
+
 
 module.exports = {
     getAll,
@@ -165,3 +171,4 @@ module.exports = {
     fullUpdate,
     partialUpdate,
 }
+
