@@ -1,40 +1,33 @@
 const mongoose = require("mongoose");
-require("./game-model")
+require("./game-model");
+const callbackify = require("util").callbackify;
 const env = process.env;
 
-
 mongoose.connect(env.DB_URL);
+
+
+const mongooseDisconnectWithCallback = callbackify(mongoose.disconnect)
 
 mongoose.connection.on("connected", function () {
     console.log("mongoose connected to", env.DB_URL);
 })
 
-mongoose.connection.on("disconnected", function () {
+mongoose.connection.on("disconnect", function () {
     console.log("mongoose disconnected");
 })
-
 mongoose.connection.on("error", function (error) {
     console.log("mongoose connection error", error);
 })
 
 process.on("SIGINT", function () {
     console.log("Reaching SIGINT")
-    mongoose.disconnect(function () {
-        process.exit();
-    })
+    mongooseDisconnectWithCallback((error) => {
+        if (error) {
+            console.error("Error disconnecting mongoose:", error);
+            process.exit(1);
+        } else {
+            console.log("Mongoose disconnected");
+            process.exit(0);
+        }
+    });
 })
-// process.on("SIGTERM", function () {
-//     console.log("Reaching SIGTERM")
-//     mongoose.disconnect(function () {
-//         console.log("SIGTERM callback called");
-//         process.exit();
-//     })
-// })
-// process.once("SIGUSR2", function () {
-//     console.log("Reaching SIGUSR2")
-//     mongoose.connection.close(function () {
-//         console.log("We are reaching here some how");
-//         process.kill(process.pid, "SIGUSR2");
-//     });
-// });
-
