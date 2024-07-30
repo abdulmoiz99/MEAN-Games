@@ -20,6 +20,7 @@ const GameDeleteOneExec_Callback = callbackify(function (gameId) {
 const GameCreate_Callback = callbackify(function (newGame) {
     return Game.create(newGame)
 })
+
 const gameSave_Callback = callbackify(function (game) {
     return game.save()
 })
