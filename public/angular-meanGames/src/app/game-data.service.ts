@@ -17,4 +17,8 @@ export class GameDataService {
   public getGame(gameId: String): Observable<Game> {
     return this._http.get<Game>("http://localhost:3000/games/" + gameId)
   }
+
+  public deleteGame(gameId: String): Observable<any> {
+    return this._http.delete<any>("http://localhost:3000/games/" + gameId)
+  }
 }
