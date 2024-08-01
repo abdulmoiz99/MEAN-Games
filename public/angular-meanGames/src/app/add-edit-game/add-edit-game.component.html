@@ -1,0 +1,45 @@
+<form [formGroup]="gameForm" (ngSubmit)="addEditGame(gameForm)">
+    <div>
+        <label>
+            Title:
+            <input name="title" id="title" placeholder="Game title" formControlName="title">
+        </label>
+    </div>
+    <div>
+        <label>
+            rating:
+            <input name="rating" id="rating" placeholder="rating" formControlName="rating">
+        </label>
+    </div>
+    <div>
+        <label>
+            year:
+            <input name="year" id="year" placeholder="year" formControlName="year">
+        </label>
+    </div>
+    <div>
+        <label>
+            price:
+            <input name="price" id="price" placeholder="price" formControlName="price">
+        </label>
+    </div>
+    <div>
+        <label>
+            minPlayers:
+            <input name="minPlayers" id="minPlayers" placeholder="minPlayers" formControlName="minPlayers">
+        </label>
+    </div>
+    <div>
+        <label>
+            maxPlayers:
+            <input name="maxPlayers" id="maxPlayers" placeholder="maxPlayers" formControlName="maxPlayers">
+        </label>
+    </div>
+    <div>
+        <label>
+            minAge:
+            <input name="minAge" id="minAge" placeholder="minAge" formControlName="minAge">
+        </label>
+    </div>
+    <button type="submit">Create</button>
+</form>

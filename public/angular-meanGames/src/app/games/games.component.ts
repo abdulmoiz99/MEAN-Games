@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 
 import { GameDataService } from '../game-data.service';
 import { CommonModule } from '@angular/common';
@@ -17,17 +17,18 @@ export class Game {
   get title() { return this.#title; }
   set title(title: string) { this.#title = title; }
   get year() { return this.#year; }
+  set year(year: string) { this.#year = year; }
   get rate() { return this.#rate; }
+  set rate(rate: number) { this.#rate = rate; }
   get price() { return this.#price; }
   set price(price: number) { this.#price = price; }
   get minPlayers() { return this.#minPlayers; }
+  set minPlayers(minPlayers: number) { this.#minPlayers = minPlayers; }
   get maxPlayers() { return this.#maxPlayers; }
+  set maxPlayers(maxPlayers: number) { this.#maxPlayers = maxPlayers; }
   get minAge() { return this.#minAge; }
-  constructor(id: string, title: string, price: number) {
-    this.#_id = id;
-    this.#title = title;
-    this.#price = price;
-  }
+  set minAge(minAge: number) { this.#minAge = minAge; }
+
 }
 
 @Component({
@@ -40,11 +41,14 @@ export class Game {
 export class GamesComponent implements OnInit {
   games: Game[] = []
 
-  constructor(private gamesService: GameDataService) { }
+  constructor(private gamesService: GameDataService, private _router: Router) { }
 
   ngOnInit(): void {
     this.gamesService.getGames().subscribe(games => {
       this.games = games;
     })
+  }
+  addNewGame(): void {
+    this._router.navigate(['addEditGame'])
   }
 }

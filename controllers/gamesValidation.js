@@ -11,7 +11,6 @@ const getGamesRequest = function (req) {
 
 const addOneRequest = function (req, res) {
     let newGame = null;
-
     if (req.body && req.body.title && req.body.price && req.body.minPlayers && req.body.minAge) {
         newGame = {
             title: req.body.title,
