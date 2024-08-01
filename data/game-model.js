@@ -2,8 +2,7 @@ const mongoose = require("mongoose");
 
 const publisherSchema = mongoose.Schema({
     name: {
-        type: String,
-        required: true
+        type: String
     },
     country: String,
     establishedYear: Number,
@@ -30,7 +29,10 @@ const reviewSchema = mongoose.Schema({
     }
 })
 const gameSchema = mongoose.Schema({
-    title: String,
+    title: {
+        type: String,
+        required: true
+    },
     year: Number,
     rate: {
         type: Number,

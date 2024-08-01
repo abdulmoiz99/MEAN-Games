@@ -1,6 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const gamesController = require("./gamescontroller");
+const gamesController = require("./controllers/gamescontroller");
+const publisherController = require("./controllers/publishercontroller");
+
+
 
 router.route("/games")
     .get(gamesController.getAll)
@@ -8,6 +11,12 @@ router.route("/games")
 
 router.route("/games/:Id")
     .get(gamesController.getOne)
+    .put(gamesController.fullUpdate)
+    .patch(gamesController.partialUpdate)
     .delete(gamesController.deleteOne)
+
+
+router.route("/games/:gameId/publisher")
+    .post(publisherController.addOne)
 
 module.exports = router;
