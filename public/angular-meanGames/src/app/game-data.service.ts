@@ -17,4 +17,23 @@ export class GameDataService {
   public getGame(gameId: String): Observable<Game> {
     return this._http.get<Game>("http://localhost:3000/games/" + gameId)
   }
+
+  public deleteGame(gameId: String): Observable<any> {
+    return this._http.delete<any>("http://localhost:3000/games/" + gameId)
+  }
+
+  public addGame(game: Game): Observable<any> {
+    const apiUrl = "http://localhost:3000/games/";
+    const gameData = {
+      title: game.title,
+      rate: game.rate,
+      year: game.year,
+      price: game.price,
+      minPlayers: game.minPlayers,
+      maxPlayers: game.maxPlayers,
+      minAge: game.minAge,
+
+    }
+    return this._http.post<Game>(apiUrl, gameData);
+  }
 }
