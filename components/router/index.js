@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const gamesController = require("./controllers/gamescontroller");
-const publisherController = require("./controllers/publishercontroller");
-
-
+const gamesController = require("../games/games.controller");
+const publisherController = require("../publisher/publisher.controller");
 
 router.route("/games")
     .get(gamesController.getAll)

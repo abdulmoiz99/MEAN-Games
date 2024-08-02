@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-require("./game-model");
+require("../components/games/game-model");
 const callbackify = require("util").callbackify;
 const env = process.env;
 
